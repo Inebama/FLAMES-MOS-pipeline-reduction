@@ -24,21 +24,9 @@ path_package=__file__.replace('INPUT.py','')
 # Paths (make sure that you are using full paths and ends in '/')
 
 ## Testing software
-# path_input :str =path_package+'TESTING_FOLDER/DATA_GIRAFFE/'
-# path_output:str =path_package+'TESTING_FOLDER/TEST_OUTPUT/Test_F/'
-path_input :str ='/scratch/home/ibaeza/Desktop/DATA/GIRAFFE_MOSSPECTRA/GIRAFFE/'
-path_output:str ='/scratch/home/ibaeza/Desktop/MY_OUTPUT/GIRAFFE_median_24h_corrected/'
+path_input :str =path_package+'TESTING_FOLDER/DATA_GIRAFFE/'
+path_output:str =path_package+'TESTING_FOLDER/TEST_OUTPUT/Test_your_attemp/'
 
-
-## Maca DATA test (all data treated separately)
-# path_input :str=path_package+'TESTING_FOLDER/DATA_MACA_GIRAFFE_6273/'
-# path_output:str=path_package+'TESTING_FOLDER/TEST_OUTPUT/Test_2/'
-
-## After first experiment I did splitted the data into 2 groups and I have merged them
-# path_input :str=path_package+'TESTING_FOLDER/DATA_MACA_GIRAFFE_6273/BLOCK1/'
-# path_output:str=path_package+'TESTING_FOLDER/TEST_OUTPUT/Test_Split1/'
-# path_input :str=path_package+'TESTING_FOLDER/DATA_MACA_GIRAFFE_6273/BLOCK2/'
-# path_output:str=path_package+'TESTING_FOLDER/TEST_OUTPUT/Test_Split2/'
 
 # Here you can explicitly enter what task do you want to perform 
 # Also you can give this information whe running on command line (see MAIN.py for details)
@@ -134,7 +122,7 @@ EXTRA_FOLDER_RV  :str = ''               # Letting empty means that will be look
 
 # Path to synthetic spectra or template star to perform CCF (Just for the Radial Velocity)
 
-complete_path_template:str =path_package+'TESTING_FOLDER/SYNTH_TEMPLATE/GIRAFFE_TEMPLATE_HR14b_R37000.dat'
+complete_path_template:str =path_package+'TESTING_FOLDER/SYNTH_TEMPLATE/GIRAFFE_TEMPLATE_HR14b_R36900.dat'
 # complete_path_template:str =path_package+'TESTING_FOLDER/SYNTH_TEMPLATE/GIRAFFE_TEMPLATE_HR13_R27000.dat'
 # complete_path_template:str =path_package+'TESTING_FOLDER/SYNTH_TEMPLATE/UVES_L_ARM_580_R47000.dat'
 # complete_path_template:str =path_package+'TESTING_FOLDER/SYNTH_TEMPLATE/UVES_R_ARM_580_R47000.dat'
@@ -228,7 +216,7 @@ WAVE_RANGE: float|tuple[float] =0.04
 
 
 # If you want to automatically fit a continuum you can do it by setting this keyword (however we highly recommend to do it intercatively)
-# While this creates a good approaximation be cautios of the edges of your spectra and in the vicinity of strong lines (this last point might be more mitigated using larger shifts)
+# While this creates a good approaximation be cautios of the edges of your spectra and in the vicinity of strong lines (this last point might be more mitigated using larger shifts), also check if the line is smooth enough ...
 AUTOMATED_CONT:bool=False
 
 ###################################################################################################################

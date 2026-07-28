@@ -163,6 +163,9 @@ if RADIAL_VEL and Across_OB:
 if (RADIAL_VEL and not Across_OB) or (CONTINUUM and not AUTOMATED_CONT):
         
     try:
+        import matplotlib
+        if matplotlib.get_backend().lower()!='tkagg':
+            raise Exception('There is a bug that whenever another backend is being iitiallized this may crash so better to check it by terminal')
         from tkinter import filedialog as fd
         path_folder:str=fd.askdirectory(title='Select the Observing Block that you want to work',
                                        initialdir=path_output) + '/'

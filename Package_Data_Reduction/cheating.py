@@ -1,12 +1,13 @@
 # For continuum sharing same parameters across observations (copying the Stored params on each folder wiht the respective names)
-if 0: 
+if 1: 
     import numpy as np 
 
-    path='/scratch/home/ibaeza/Desktop/MY_OUTPUT/GIRAFFE_median_1h_new/'
+    path='/Users/ibaeza/Documents/GitHub/FLAMES-MOS-pipeline-reduction/Package_Data_Reduction/TESTING_FOLDER/TEST_OUTPUT/Test_F/'
 
-    data_or=np.load(path+'OB-15/RESTFRAME/Stored_params.npy',allow_pickle=True).item()
+    data_or=np.load(path+'/OB-0/RESTFRAME/Stored_params.npy',allow_pickle=True).item()
 
-    Folders=['OB-1','OB-2','OB-3','OB-4','OB-5','OB-6','OB-7','OB-8','OB-9','OB-10','OB-11','OB-12','OB-13','OB-14','OB-16']
+    Folders=['OB-1']
+    # Folders=['OB-1','OB-2','OB-3','OB-4','OB-5','OB-6','OB-7','OB-8','OB-9','OB-10','OB-11','OB-12','OB-13','OB-14','OB-16']
 
     names=dict()
     for i in data_or.keys():
