@@ -28,7 +28,9 @@ motivated set of models.
 For a model point `θ` (one row of one isochrone) and an observed star `D` (one point in the
 CMD),
 
-$$P(\theta\,|\,D)\;\propto\;\mathcal{L}(D\,|\,\theta)\;\cdot\;P(\theta)$$
+```math
+P(\theta\,|\,D)\;\propto\;\mathcal{L}(D\,|\,\theta)\;\cdot\;P(\theta)
+```
 
 ### The prior — the user's visual fit
 
@@ -37,7 +39,9 @@ the CMD by adjusting the distance modulus and the visual absorption until the is
 the features stellar evolution says they must reproduce: the turn-off, the RGB bump and the
 horizontal branch. Formally,
 
-$$P(\theta)=\begin{cases}1 & \text{if the model was selected}\\ 0 & \text{otherwise}\end{cases}$$
+```math
+P(\theta)=\begin{cases}1 & \text{if the model was selected}\\ 0 & \text{otherwise}\end{cases}
+```
 
 This restricts the model space to a finite, physically motivated subset and simultaneously
 fixes the distance modulus and reddening. It is a deliberate design choice: the astronomer's
@@ -47,7 +51,9 @@ knowledge of the system enters as a hard prior instead of as extra free paramete
 
 With `Δ = (Δmag, Δcol)ᵀ` the offset between the observed point and a model point,
 
-$$D_M^2=\Delta^{T}\,\Sigma^{-1}\,\Delta \qquad\qquad \log\mathcal{L}\;\propto\;-\tfrac{N}{2}\,D_M^2$$
+```math
+D_M^2=\Delta^{T}\,\Sigma^{-1}\,\Delta \qquad\qquad \log\mathcal{L}\;\propto\;-\tfrac{N}{2}\,D_M^2
+```
 
 `N` (`degree` in the code, default `2.0`) tunes how fast the likelihood falls with distance:
 `N = 2` is the Gaussian case and is the recommended value; larger `N` privileges the nearest
@@ -57,11 +63,17 @@ model points over densely sampled regions.
 
 For magnitude `m₁` and colour `c = m₂ − m₃`, with `A_x/A_V` the extinction coefficients:
 
-$$\sigma^2_m=\sigma^2_{m_1,\rm phot}+\sigma^2_\mu+\left(\frac{A_{m_1}}{A_V}\delta A_V\right)^2$$
+```math
+\sigma^2_m=\sigma^2_{m_1,\rm phot}+\sigma^2_\mu+\left(\frac{A_{m_1}}{A_V}\delta A_V\right)^2
+```
 
-$$\sigma^2_c=\sigma^2_{m_2,\rm phot}+\sigma^2_{m_3,\rm phot}+\left(\frac{A_{m_2}-A_{m_3}}{A_V}\delta A_V\right)^2$$
+```math
+\sigma^2_c=\sigma^2_{m_2,\rm phot}+\sigma^2_{m_3,\rm phot}+\left(\frac{A_{m_2}-A_{m_3}}{A_V}\delta A_V\right)^2
+```
 
-$$\mathrm{Cov}(m,c)=f\,\sigma^2_{m_1,\rm phot}+\frac{A_{m_1}}{A_V}\cdot\frac{A_{m_2}-A_{m_3}}{A_V}\,\delta A_V^2$$
+```math
+\mathrm{Cov}(m,c)=f\,\sigma^2_{m_1,\rm phot}+\frac{A_{m_1}}{A_V}\cdot\frac{A_{m_2}-A_{m_3}}{A_V}\,\delta A_V^2
+```
 
 The covariance term encodes two real correlations: **(i)** a filter shared between the
 magnitude and the colour, and **(ii)** the coherent shift that reddening and distance impose on
@@ -115,8 +127,10 @@ The normalised weights `ω_i = exp(logL_i − max logL) / Σ` are attached to th
 **any** column of the isochrone can be marginalised, preserving the non-linear mapping between
 the CMD and, say, the Kiel diagram:
 
-$$\bar X=\frac{\sum_i \omega_i X_i}{\sum_i \omega_i}\qquad
-\sigma_{X\pm}=\sqrt{\frac{\sum_i \omega_i (X_i-\bar X)^2}{\sum_i \omega_i}}$$
+```math
+\bar X=\frac{\sum_i \omega_i X_i}{\sum_i \omega_i}\qquad
+\sigma_{X\pm}=\sqrt{\frac{\sum_i \omega_i (X_i-\bar X)^2}{\sum_i \omega_i}}
+```
 
 with the sums restricted to `X_i ≥ X̄` for `σ₊` and `X_i ≤ X̄` for `σ₋` — i.e. **asymmetric**
 weighted dispersions, which is what you need when the posterior is multi-modal (a star's
@@ -168,15 +182,18 @@ you can filter or re-weight the results afterwards.
 
 **Skepticism score** — lower is better:
 
-$$S=\frac{D_{M,\min}}{R}\;\Big(1-\frac{N_{\rm used}}{N_{\rm cones}}\Big)^{1/2},
-\qquad R=\sqrt{\texttt{min\_mag\_dist}^2+\texttt{min\_color\_dist}^2}$$
+```math
+S=\frac{D_{M,\min}}{R}\left(1-\frac{N_{\rm used}}{N_{\rm cones}}\right)^{1/2}
+```
+
+where `R = (min_mag_dist**2 + min_color_dist**2)**0.5` is the radius of the acceptance region:
 
 ```python
 Skepticism_score = (d_min/((min_mag_dist**2+min_color_dist**2)**0.5)) * ((1-(NP_mod/N_bins))**0.5)
 ```
 
-The first factor measures how close the star lies to the model grid, normalised by the radius
-of the acceptance region (`R = 0.0828` mag with the defaults, so `1/R = 12.08`); values near
+The first factor measures how close the star lies to the model grid, normalised by that radius
+(`R = 0.0828` mag with the defaults, so `1/R = 12.08`); values near
 zero indicate a well-matched, densely sampled region, larger values poor coverage or
 extrapolation. The second factor measures how completely the neighbourhood was sampled — see
 [§ The coverage factor](#the-coverage-factor) below. Typical behaviour:

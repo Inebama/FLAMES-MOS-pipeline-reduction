@@ -123,7 +123,9 @@ def cross_correlation(self, RV):
 
 i.e.
 
-$$\mathrm{CCF}(v)=\sum_i S_{\rm obs}(\lambda_i)\; S_{\rm tmpl}\!\left(\lambda_i - \Delta\lambda(v)\right)$$
+```math
+\mathrm{CCF}(v)=\sum_i S_{\rm obs}(\lambda_i)\; S_{\rm tmpl}\!\left(\lambda_i - \Delta\lambda(v)\right)
+```
 
 a straight product sum with the template interpolated onto the observed pixel grid — no
 normalisation by the template norm, no continuum removal (the code contains a commented-out
@@ -191,7 +193,9 @@ converge` is printed) but do not stop the run.
 
 The final uncertainty combines three independent terms in quadrature:
 
-$$\sigma_{\rm RV}=\sqrt{\;\sigma^2_{\rm centres}\;+\;\widetilde{\sigma^2_{\rm fit}}\;+\;\sigma^2_{\rm pix}\;}$$
+```math
+\sigma_{\rm RV}=\sqrt{\;\sigma^2_{\rm centres}\;+\;\widetilde{\sigma^2_{\rm fit}}\;+\;\sigma^2_{\rm pix}\;}
+```
 
 | Term | Code | Meaning |
 |---|---|---|
