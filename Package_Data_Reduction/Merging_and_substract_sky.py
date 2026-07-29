@@ -483,8 +483,8 @@ def new_fits(Fname,
         header['DFIL'+str(i)]  = (j, f'Original parent File MJD N:{i+1} of {len(Ofile)}')
 
     # Info about telescope
-    header['GEOLON']  = (GLAT,  'Geo Latitude of Telescope')
-    header['GEOLAT']  = (GLON,  'Geo Longitude of Telescope')
+    header['GEOLON']  = (GLON,  'Geo Longitude of Telescope')
+    header['GEOLAT']  = (GLAT,  'Geo Latitude of Telescope')
     header['GEOLEV']  = (HTEL,  'Height over sea of Telescope')
     
     # original number of proportionally counts that you have to multiply your file to get the real (not scaled to 1 spectra)
@@ -583,8 +583,8 @@ def save_sky(skies_obs,
  
 
     # Info about telescope
-    header['GEOLON']  = (GLAT,  'Geo Latitude of Telescope')
-    header['GEOLAT']  = (GLON,  'Geo Longitude of Telescope')
+    header['GEOLON']  = (GLON,  'Geo Longitude of Telescope')
+    header['GEOLAT']  = (GLAT,  'Geo Latitude of Telescope')
     header['GEOLEV']  = (HTEL,  'Height over sea of Telescope')
 
     # Comments Example

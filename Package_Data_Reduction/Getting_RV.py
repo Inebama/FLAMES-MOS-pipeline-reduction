@@ -90,6 +90,7 @@ def get_w_f(path):
         if (MIN_WAVE_CCF is None) or (MAX_WAVE_CCF is None): # If values are not given we trim 1/20 per extreme
             Ext    =[min(wave),max(wave)]
             delta  =(Ext[1]-Ext[0])/20
+            global MIN, MAX
             MIN,MAX=Ext[0]+delta,Ext[1]-delta
 
         mask = (MIN<wave)&(wave<MAX)     # Cut the edges os spectra
@@ -290,20 +291,15 @@ if PLOT_sumary:
         if None in WINDOW_1:
             WINDOW_1=(new_wave[Npoint_ref[0]],new_wave[Npoint_ref[1]])
     except:
-        WINDOW_1=(new_wave[Npoint_ref[0]],new_wave[Npoint_ref[1]])
-    else:
         print('Window 1 was not identified, it will show just a generic window')
         WINDOW_1=(new_wave[Npoint_ref[0]],new_wave[Npoint_ref[1]])
-    
+  
     try:
         if None in WINDOW_2:
             WINDOW_2=(new_wave[Npoint_ref[2]],new_wave[Npoint_ref[3]])
     except:
-        WINDOW_2=(new_wave[Npoint_ref[2]],new_wave[Npoint_ref[3]])
-    else:
         print('Window 2 was not identified, it will show just a generic window')
         WINDOW_2=(new_wave[Npoint_ref[2]],new_wave[Npoint_ref[3]])
-    
 
     print('\nTemplate spectra diplayed on black\n')
     ax1.plot(Template_wave,Template_flux,color='black',lw=2)

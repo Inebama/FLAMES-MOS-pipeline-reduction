@@ -223,7 +223,7 @@ class ISO_FIT:
         err_mag1  : float|Iterable = 0.05,    You could provide error for magnitude (global or individual per each source) err 5% on flux \\implies +2.5*\\log10(1.05) or -2.5\\log10(0.95) \\approx +/- 0.05 mag
         err_mag2  : float|Iterable = 0.05,    You could provide error for magnitude that compose color mag2-mag3 (global or individual)
         err_mag3  : float|Iterable = 0.05,    You could provide error for magnitude that compose color mag2-mag3 (global or individual)
-        err_dist  : float|Iterable = 0.03,    Error in mag produced by error in distance => \\delta(m-M)\sim 2.17 \\times ((\\delta d)/d) \\implies 1%  0.027 mag
+        err_dist  : float|Iterable = 0.03,    Error in mag produced by error in distance => \\delta(m-M)\\sim 2.17 \\times ((\\delta d)/d) \\implies 1%  0.027 mag
         err_redd  : float|Iterable = 0.05,    Error in visual absorption => \\delta A_v \\propto \\delta color \\implies \\delta E(B-V)= 0.015 \\approx delta A_v=0.05                
         iso_path  : str      | None = None,   If you want you can provide directly a path otherwise it will ask you to point one with an emergent window
         degree    : float           = 5.00,   Degree of decaiment on the relevance of point (higher degree priorizes nearest data, lower degree priorizes density of models see likelihood function)         
@@ -280,7 +280,7 @@ class ISO_FIT:
 
         # Storing Parameters
         mask = ()#(MAG<14)#&(MAG>11)
-        nnn  = -1#200#11
+        nnn  = None#-1#200#11
         self.MAG      = MAG  [mask][:nnn]  # Target Magnitude
         self.COLOR    = COLOR[mask][:nnn]  # Target Color
 
@@ -433,7 +433,7 @@ class ISO_FIT:
         # I f we use the same magnitude for m1 and the color this will correlate the errors of both measures
         if A_mag1==A_mag2:
             factor= 1
-        elif A_mag1==A_mag2:
+        elif A_mag1==A_mag3:
             factor=-1
         else:
             factor= 0
@@ -761,7 +761,7 @@ class ISO_FIT:
                     sys.stdout.flush()
 
             
-            inferred_params['Skepticism_score']= ((inferred_params['d_min']/(min_mag_dist**2+min_color_dist**2))**0.5)*((1-(inferred_params['NP_mod']/self.N_bins))**0.5)
+            inferred_params['Skepticism_score']= (inferred_params['d_min']/((min_mag_dist**2+min_color_dist**2)**0.5))*((1-(inferred_params['NP_mod']/self.N_bins))**0.5)
             inferred_params['scale_err']=1+(inferred_params['Skepticism_score']**0.5)
 
             # for i in range(N_data):
