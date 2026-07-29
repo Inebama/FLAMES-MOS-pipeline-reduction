@@ -167,10 +167,10 @@ Two columns accompany every star. Neither feeds back into the inference — they
 you can filter or re-weight the results afterwards.
 
 **Skepticism score** — lower is better:
-
+`
 $$S=\frac{D_{M,\min}}{R}\;\Big(1-\frac{N_{\rm used}}{N_{\rm cones}}\Big)^{1/2},
 \qquad R=\sqrt{\texttt{min\_mag\_dist}^2+\texttt{min\_color\_dist}^2}$$
-
+`
 ```python
 Skepticism_score = (d_min/((min_mag_dist**2+min_color_dist**2)**0.5)) * ((1-(NP_mod/N_bins))**0.5)
 ```
