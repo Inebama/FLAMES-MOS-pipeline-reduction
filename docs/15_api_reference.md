@@ -248,7 +248,7 @@ Opens the GUI immediately (`run_app`). `iso_path=None` → a file dialog.
 
 | Method | Purpose |
 |---|---|
-| `photometric_system(system)` | set `self.system` (Mag1/Mag2/Mag3) and `self.absorption_coeff`; derives `abs_mag`, `abs_col` |
+| `photometric_system(system)` | set `self.system` (Mag1/Mag2/Mag3) and `self.absorption_coeff`; derives `abs_mag`, `abs_col`. Names: `'gaia'`, `'gaia_old'`, `'ubvir'`, `'ubvir_old'` (case-insensitive). To add one see [12 §C.1](12_isochrone_fitting.md#defining-your-own-photometric-system) |
 | `isochrone_read(path=None, update=True)` | read the PARSEC file, filter `Stages`, list `MH`/`AGE`, set initial `AV`/`UM` |
 | `change_iso(update=True)` | select the current (MH, logAge) isochrone |
 | `fitted_isochrone()` | apply `UM` and `AV` to the isochrone |
@@ -295,7 +295,7 @@ ISO_FIT(MAG, COLOR,
 
 | Method | Purpose |
 |---|---|
-| `photometric_system(system)` | as above |
+| `photometric_system(system)` | as above, plus `'hstw'` (HST wide filters; this tool only) |
 | `inverse_covariance_matrix_cmd(err_mag1, err_mag2, err_mag3, err_dist, err_redd)` | build and invert Σ (one matrix, or one per star if arrays are given) |
 | `isochrone_read(path=None)` | load the whole grid; set `all_ages`, `all_mh`, `Iso_mask` |
 | `Figure_setup(id=170499)` | GUI with two `RangeSlider`s (MH, logAge) and two `Slider`s (A_V, distance modulus) |

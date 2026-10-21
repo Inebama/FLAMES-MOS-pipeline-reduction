@@ -285,7 +285,7 @@ ISO_FIT(MAG   = I,              # CMD magnitude (m1)
         RA    = ra,
         DEC   = dec,
         iso_path   = '/path/to/PARSEC_grid.txt',   # None → a file dialog opens
-        photometry = 'ubvir',   # 'gaia' | 'gaia_old' | 'ubvir' | 'ubvir_old'
+        photometry = 'ubvir',   # 'gaia' | 'gaia_old' | 'ubvir' | 'ubvir_old' | 'hstw' | your own (§C.1)
         Header     = 14,        # 13 for old PARSEC, 14 for PARSEC v2 / CMD 3.8
         degree     = 2.0,       # N in the likelihood
         N_bins     = 360,       # angular cones
@@ -349,17 +349,13 @@ it instead of `save_fits` in `match_nearest`).
    Handy for testing the fit on a hundred stars before launching the full run.
 2. **`OBJ`, `RA` and `DEC` are effectively required.** They are sliced in the constructor, so
    passing `None` raises `TypeError`. Supply dummy arrays if you have no identifiers.
-3. **The initial `AV` and `UM` are hard-coded** to `0.01` and `13.37` (47 Tuc values) in
-   `isochrone_read`, overriding the automatically estimated values computed just above. You
-   adjust them with the sliders anyway, but do not read them as defaults appropriate to your
-   system — change those two literals if you work on another cluster regularly.
-4. **Memory.** The whole isochrone grid is loaded with `np.genfromtxt` and kept in RAM, and the
+3. **Memory.** The whole isochrone grid is loaded with `np.genfromtxt` and kept in RAM, and the
    arrays are re-sent to every worker process. Large PARSEC grids plus a large photometric
    catalogue can reach several GB; the GUI may lag on the first draw.
-5. **Speed.** Of order seconds per star. With `imap_unordered` over all cores, a few thousand
+4. **Speed.** Of order seconds per star. With `imap_unordered` over all cores, a few thousand
    stars is minutes, not hours; but reduce `N_bins`, tighten `max_mag_dist`/`max_color_dist`,
    or restrict the CMD region if you need it faster.
-6. **PARSEC-only.** The column names (`MH`, `logAge`, `label`, `logTe`, `logg`, the magnitude
+5. **PARSEC-only.** The column names (`MH`, `logAge`, `label`, `logTe`, `logg`, the magnitude
    names) are hard-coded to the CMD web-interface output. Other isochrone families require
    real code changes.
 
@@ -416,37 +412,127 @@ loaded.
 
 ## C.1 Photometric systems
 
-Set with `photometry=` (case-insensitive). Each entry defines which isochrone columns are
-`Mag1` (the CMD magnitude), `Mag2` and `Mag3` (the colour), together with the extinction
-coefficients `A_λ/A_V`:
+### In simple terms
 
-| Key | Mag1 | Mag2 − Mag3 | Notes |
-|---|---|---|---|
-| `'GAIA'` | `G_fSBmag` | `G_BP_fSBmag − G_RP_fSBmag` | PARSEC v2 column names (DR3/EDR3) |
-| `'GAIA_OLD'` | `Gmag` | `G_BPmag − G_RPmag` | PARSEC v1.2 column names |
-| `'UBVIR'` | `I_fSBmag` | `V_fSBmag − I_fSBmag` | PARSEC v2; used with Stetson photometry (Stetson et al. 2019) |
-| `'UBVIR_OLD'` | `Imag` | `Vmag − Imag` | PARSEC v1.2 |
-| `'system_random'` | `magnitude1` | `magnitude2 − magnitude3` | template to copy for your own system |
+A CMD is one magnitude plotted against one colour. For these tools a *photometric system* is
+nothing more than three filter choices,
 
-Coefficients in use: `A_U/A_V = 1.55814`, `A_B = 1.32616`, `A_V = 1.00096`, `A_R = 0.80815`,
-`A_I = 0.59893`, `A_J = 0.28688`, `A_H = 0.18103`, `A_K = 0.11265`; `A_G = 0.83627`,
-`A_BP = 1.08337`, `A_RP = 0.63439` (PARSEC v2 CMD 3.8 output page, R_V = 3.1, Cardelli et al.
-1989 / O'Donnell 1994 for a G2V star).
+| role | meaning |
+|---|---|
+| `Mag1` | the magnitude on the vertical axis |
+| `Mag2`, `Mag3` | the colour on the horizontal axis is `Mag2 − Mag3` |
 
-**To add a system**, copy the `'GAIA'` block in `photometric_system` and edit the column names
-and the coefficients. The keys of `absorption_coeff` must match the names used in `system`.
-The class then derives
+plus, for each of those filters, its **extinction coefficient relative to the visual**,
+`A_λ / A_V` — how many magnitudes that filter dims for every magnitude of visual extinction.
+
+From those coefficients the code derives the two numbers that move the isochrone when you drag
+the *Visual Absorption* slider:
 
 ```python
-abs_mag = A[Mag1]                  # applied to the magnitude axis
-abs_col = A[Mag2] - A[Mag3]        # applied to the colour axis
+abs_mag = A[Mag1]                  # how far the isochrone moves DOWN  per unit A_V
+abs_col = A[Mag2] - A[Mag3]        # how far it moves to the RED       per unit A_V
 ```
 
-and the isochrone is placed with
+and places it on your data with
 
 ```python
 mag_fit   = mag_iso   + UM + AV*abs_mag
 color_fit = color_iso +      AV*abs_col
+```
+
+The same coefficients also enter the covariance matrix of the likelihood (§A.1): the code compares
+them to detect whether the magnitude filter is also one of the colour filters, which sets the
+shared-filter factor `f`.
+
+### Systems already defined
+
+Select one with `photometry=`. The name is **case-insensitive** (`'gaia'` = `'GAIA'`).
+
+| `photometry=` | `Mag1` | colour `Mag2 − Mag3` | `abs_mag` | `abs_col` | shared filter → `f` | available in | notes |
+|---|---|---|---|---|---|---|---|
+| `'GAIA'` | `G_fSBmag` | `G_BP_fSBmag − G_RP_fSBmag` | 0.83627 | 0.44898 | none → 0 | both tools | Gaia EDR3/DR3, PARSEC v2 / CMD 3.8 column names |
+| `'GAIA_OLD'` | `Gmag` | `G_BPmag − G_RPmag` | 0.83627 | 0.44898 | none → 0 | both tools | same filters, PARSEC v1.2 column names |
+| `'UBVIR'` | `I_fSBmag` | `V_fSBmag − I_fSBmag` | 0.59893 | 0.40203 | `Mag1 = Mag3` → −1 | both tools | Johnson–Cousins, PARSEC v2 names; used with Stetson et al. (2019) photometry |
+| `'UBVIR_OLD'` | `Imag` | `Vmag − Imag` | 0.59893 | 0.40203 | `Mag1 = Mag3` → −1 | both tools | same filters, PARSEC v1.2 names |
+| `'HSTW'` | `F606Wmag` | `F606Wmag − F814Wmag` | 0.90941 | 0.31096 | `Mag1 = Mag2` → +1 | **`multiple_isochrone_fitting.py` only** | HST wide filters (UVIS F218W–F814W, IR F105W–F160W) |
+
+Each block's `absorption_coeff` lists **every filter of its set**, not only the three in use
+(eight for UBVRIJHK, three for Gaia, seventeen for HST). Only `Mag1`, `Mag2`, `Mag3` are read; the
+rest is a reference table, so switching to another combination *within the same set* only needs
+a change to `self.system`.
+
+The coefficients `A_λ/A_V` are taken from the output of the PARSEC CMD web page.
+
+**Column names depend on the CMD version.** In PARSEC v2 / CMD 3.8 files the UBVRIJHK and Gaia
+magnitudes carry an `_fSBmag` suffix (`U_fSBmag … K_fSBmag`, `G_fSBmag`, `G_BP_fSBmag`,
+`G_RP_fSBmag`), which is why each of those systems has an `_OLD` twin for v1.2 files.
+
+An unrecognised name fails as soon as the class is built, with
+
+```
+AttributeError: 'ISO_FIT' object has no attribute 'absorption_coeff'
+```
+
+### Defining your own photometric system
+
+You add a block by hand to the `photometric_system` method. Three things must be right:
+**the filter combination**, **names that match the isochrone columns exactly**, and **the
+coefficients relative to `A_V`**.
+
+**1. Read the column names from your isochrone.** Open the file and find the column-name line —
+the last `#` line before the numbers (line 15 in a CMD 3.8 file). Copy the magnitude names
+exactly; they are case-sensitive. A misspelt name stops the program when the isochrone is read,
+with
+
+```
+ValueError: no field of name Gmag
+```
+
+**2. Take `A_λ/A_V` for each filter from the output of the CMD web page.**
+
+**3. Choose the CMD.** `Mag1` is the vertical axis; the colour is `Mag2 − Mag3`. The same filter
+may appear twice — that is a normal CMD such as `V` vs `B − V`.
+
+**4. Add the block** inside `photometric_system`, next to the existing ones and **before** the
+`###########` line. Example — `V` against `B − V` from the PARSEC v2 UBVRIJHK file (these column
+names and coefficients are exactly those already used by the `'UBVIR'` block):
+
+```python
+        # V vs B-V, PARSEC v2 / CMD 3.8 UBVRIJHK file
+        if system.upper()=='BV':
+            self.system={'Mag1':'V_fSBmag',      # vertical axis
+                         'Mag2':'B_fSBmag',      # colour = Mag2 - Mag3
+                         'Mag3':'V_fSBmag'}
+            self.absorption_coeff={'B_fSBmag':1.32616,   # A_B / A_V
+                                   'V_fSBmag':1.00096,   # A_V / A_V
+                                  }
+```
+
+and use it with `ISO_FIT(..., photometry='bv', Header=14)`. For this system the code will derive
+`abs_mag = 1.00096`, `abs_col = 1.32616 − 1.00096 = 0.32520`, and `f = −1` (`Mag1 = Mag3`).
+
+**The rules that are easy to get wrong**
+
+* Write the name in the `if` check in upper case (e.g. `'BV'`), as in the existing blocks.
+* The keys of `self.system` must be exactly `'Mag1'`, `'Mag2'`, `'Mag3'`.
+* Every filter named in `self.system` must also be a key of `self.absorption_coeff`; extra keys
+  are allowed and ignored.
+* The coefficients are **relative to `A_V`**, not absolute extinctions.
+* **Two different filters must not have exactly the same coefficient.** The code decides whether
+  the magnitude filter is shared with the colour by comparing coefficient *values*
+  (`A_mag1 == A_mag2`), not filter names, so a coincidence would be taken as a shared filter and
+  add a spurious magnitude–colour correlation to the error ellipse.
+* `single_isochrone_fitting.py` and `multiple_isochrone_fitting.py` each have **their own copy**
+  of `photometric_system`. Add your block to the file you use (this is why `'HSTW'` currently
+  exists only in the multiple-isochrone tool).
+
+**5. Check it without opening the GUI:**
+
+```python
+import types, multiple_isochrone_fitting as mif
+o = types.SimpleNamespace()
+mif.ISO_FIT.photometric_system(o, 'bv')
+print(o.system, o.abs_mag, o.abs_col)      # -> ... 1.00096 0.32519999999999993
 ```
 
 ## C.2 Evolutionary stages (PARSEC `label`)

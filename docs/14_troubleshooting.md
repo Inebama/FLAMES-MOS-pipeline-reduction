@@ -230,15 +230,6 @@ Edit before running.
 Its `__main__` block is the author's 47 Tuc reddening analysis and calls `sys.exit()` before
 reaching `ISO_FIT(...)`. Import the class instead of running the module.
 
-## B.12 Products written before v1.0 use the old `GEOLON`/`GEOLAT` convention
-
-Earlier versions of `new_fits`/`save_sky` wrote the observatory latitude under `GEOLON` and the
-longitude under `GEOLAT` (the comment fields were correct, and the barycentric correction was
-always computed with the right assignment, so no measurement was affected). Current versions
-write both correctly. The reference outputs bundled in `TESTING_FOLDER/TEST_OUTPUT/` were
-generated before the change and still carry the old convention — regenerate them if you rely on
-those keywords.
-
 ---
 
 # C. Sanity checks to run on your own data

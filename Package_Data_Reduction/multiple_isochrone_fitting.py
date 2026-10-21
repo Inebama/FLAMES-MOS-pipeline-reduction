@@ -386,8 +386,32 @@ class ISO_FIT:
                                    'H_fSBmag':0.18103,    
                                    'K_fSBmag':0.11265,
                                   }
+        # Combination for HSTw filters   
+        if system.upper()=='HSTW':
+            self.system={'Mag1':'F606Wmag',
+                            'Mag2':'F606Wmag',
+                            'Mag3':'F814Wmag'}
+            
+            self.absorption_coeff={'F218Wmag':3.08782,
+                                    'F225Wmag':2.62940,
+                                    'F275Wmag':2.02499,
+                                    'F336Wmag':1.67536,
+                                    'F390Wmag':1.44380,
+                                    'F438Wmag':1.34148,
+                                    'F475Wmag':1.20367,
+                                    'F555Wmag':1.04089,
+                                    'F606Wmag':0.90941,
+                                    'F625Wmag':0.85528,
+                                    'F775Wmag':0.65905,
+                                    'F814Wmag':0.59845,
+                                    'F105Wmag':0.36866,
+                                    'F110Wmag':0.31708,
+                                    'F125Wmag':0.28148,
+                                    'F140Wmag':0.23585,
+                                    'F160Wmag':0.20177,
+                                    }
         # Set your own photometric system    
-        if system.upper()=='system_random':
+        if system.upper()=='SYSTEM_RANDOM':
             self.system={'Mag1':'magnitude1',
                          'Mag2':'magnitude2',
                          'Mag3':'magnitude3'}
@@ -673,8 +697,8 @@ class ISO_FIT:
         if AV<0: # you can not have negative absorption
             AV=0
 
-        self.AV= 0.01#AV 
-        self.UM= 13.37#(np.mean(self.MAG  )-np.mean(self.Mag_iso)  )
+        self.AV= AV 
+        self.UM= (np.mean(self.MAG  )-np.mean(self.Mag_iso)  )
 
         # Shift the isochrone near the data
         self.fitted_isochrone()

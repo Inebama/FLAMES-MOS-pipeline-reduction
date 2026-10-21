@@ -227,7 +227,7 @@ WAVE_TEMP, FLUX_TEMP = w, f
 | change the CCF definition (e.g. normalise by the template norm) | `CCF.cross_correlation` — a commented "template-match" variant is already there |
 | add more analytic fits to the CCF peak | `CCF.find_rv` (the four `try/except` blocks) and `CCF.get_errs_info` |
 | change the continuum guess (shift width, number of samples, percentile) | `cont_fit.__init__` (`self.shift`, `self.Nsamples`, `self.percentile_of_cont`, `self.percentile_range`) or the corresponding arguments of `automated_continuum` |
-| add a photometric system to the isochrone tools | the `photometric_system` method of either isochrone class — copy the `'GAIA'` block and edit the filter names and A_λ/A_V coefficients |
+| add a photometric system to the isochrone tools | the `photometric_system` method of the tool you use (each isochrone file has its own copy) — follow the step-by-step guide in [12 §C.1](12_isochrone_fitting.md#defining-your-own-photometric-system) |
 
 Because `INPUT.py` is imported with `from INPUT import *`, **any** name you define there is
 visible to `MAIN.py` and to `Getting_RV.py` (which is `exec`'d in the same namespace). That is
